@@ -1,16 +1,529 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
+    <title>GameStore - Магазин игр в Telegram</title>
+    <style>
+        :root {
+            --tg-theme-bg-color: #1f1f1f;
+            --tg-theme-text-color: #ffffff;
+            --tg-theme-hint-color: #aaaaaa;
+            --tg-theme-link-color: #3390ec;
+            --tg-theme-button-color: #3390ec;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #2e2e2e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 16px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--tg-theme-text-color);
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            background-color: var(--tg-theme-secondary-bg-color);
+            border: none;
+            border-radius: 10px;
+            color: var(--tg-theme-text-color);
+            font-size: 16px;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--tg-theme-hint-color);
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+        }
+
+        .category {
+            padding: 8px 16px;
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .category.active {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 12px;
+        }
+
+        .game-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .game-description {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--tg-theme-button-color);
+        }
+
+        .buy-button {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .buy-button:hover {
+            opacity: 0.9;
+        }
+
+        .cart-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff3b30;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--tg-theme-button-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        /* Адаптивность для планшетов и ПК */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .games-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .games-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <h1>Онлан магазин проверок</h1>
-        <img src="https://img.icons8.com/?size=100&id=32479&format=png&color=000000" alt="">
-        <p>Здесь было бы описание но его тут нет и хз когда оно бужет или будет ли вообще, крч не делай мозг</p>
-        <button id="buy">Купить</button>
+    <div class="container">
+        <header>
+            <div class="logo">GameStore</div>
+            <div class="user-avatar">👤</div>
+        </header>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Поиск игр..." id="searchInput">
+        </div>
+
+        <div class="categories">
+            <div class="category active" data-category="all">Все игры</div>
+            <div class="category" data-category="action">Экшен</div>
+            <div class="category" data-category="rpg">RPG</div>
+            <div class="category" data-category="strategy">Стратегии</div>
+            <div class="category" data-category="adventure">Приключения</div>
+            <div class="category" data-category="sports">Спорт</div>
+        </div>
+
+        <div class="games-grid" id="gamesGrid">
+            <!-- Игры будут загружены динамически -->
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
     </div>
+
+    <div class="cart-button" id="cartButton">
+        🛒
+        <div class="cart-count" id="cartCount">0</div>
+    </div>
+
+    <div class="notification" id="notification">Игра добавлена в корзину!</div>
+
+    <script>
+        // Имитация данных игр
+        const games = [
+            {
+                id: 1,
+                title: "Cyber Runner",
+                description: "Захватывающая игра в киберпанк стиле с открытым миром",
+                price: 1299,
+                category: "action",
+                image: "https://via.placeholder.com/300x150/3390ec/ffffff?text=Cyber+Runner"
+            },
+            {
+                id: 2,
+                title: "Fantasy Quest",
+                description: "Ролевая игра с глубоким сюжетом и развитой системой персонажей",
+                price: 1899,
+                category: "rpg",
+                image: "https://via.placeholder.com/300x150/34c759/ffffff?text=Fantasy+Quest"
+            },
+            {
+                id: 3,
+                title: "Space Empire",
+                description: "Стратегия по освоению космоса и созданию межгалактической империи",
+                price: 1499,
+                category: "strategy",
+                image: "https://via.placeholder.com/300x150/ff9500/ffffff?text=Space+Empire"
+            },
+            {
+                id: 4,
+                title: "Mountain Adventure",
+                description: "Приключенческая игра с исследованием загадочных гор",
+                price: 999,
+                category: "adventure",
+                image: "https://via.placeholder.com/300x150/ff3b30/ffffff?text=Mountain+Adventure"
+            },
+            {
+                id: 5,
+                title: "Extreme Racing",
+                description: "Гоночный симулятор с экстремальными трассами и автомобилями",
+                price: 1599,
+                category: "sports",
+                image: "https://via.placeholder.com/300x150/5856d6/ffffff?text=Extreme+Racing"
+            },
+            {
+                id: 6,
+                title: "Zombie Survival",
+                description: "Выживание в постапокалиптическом мире, наполненном зомби",
+                price: 1199,
+                category: "action",
+                image: "https://via.placeholder.com/300x150/af52de/ffffff?text=Zombie+Survival"
+            },
+            {
+                id: 7,
+                title: "Magic Academy",
+                description: "Стань студентом академии магии и открой свои способности",
+                price: 1699,
+                category: "rpg",
+                image: "https://via.placeholder.com/300x150/5ac8fa/ffffff?text=Magic+Academy"
+            },
+            {
+                id: 8,
+                title: "Ancient Empires",
+                description: "Стратегия о развитии древних цивилизаций и их противостоянии",
+                price: 1399,
+                category: "strategy",
+                image: "https://via.placeholder.com/300x150/ffcc00/000000?text=Ancient+Empires"
+            }
+        ];
+
+        // Переменные состояния
+        let cart = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Элементы DOM
+        const gamesGrid = document.getElementById('gamesGrid');
+        const loadingElement = document.getElementById('loading');
+        const cartButton = document.getElementById('cartButton');
+        const cartCount = document.getElementById('cartCount');
+        const notification = document.getElementById('notification');
+        const searchInput = document.getElementById('searchInput');
+        const categories = document.querySelectorAll('.category');
+
+        // Инициализация приложения
+        function init() {
+            renderGames();
+            setupEventListeners();
+            updateCartCount();
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Фильтрация по категориям
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    categories.forEach(c => c.classList.remove('active'));
+                    category.classList.add('active');
+                    currentCategory = category.dataset.category;
+                    renderGames();
+                });
+            });
+
+            // Поиск
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                renderGames();
+            });
+
+            // Корзина
+            cartButton.addEventListener('click', showCart);
+        }
+
+        // Отображение игр
+        function renderGames() {
+            // Показать индикатор загрузки
+            loadingElement.style.display = 'flex';
+            gamesGrid.innerHTML = '';
+
+            // Имитация задержки загрузки
+            setTimeout(() => {
+                // Фильтрация игр по категории и поисковому запросу
+                const filteredGames = games.filter(game => {
+                    const matchesCategory = currentCategory === 'all' || game.category === currentCategory;
+                    const matchesSearch = game.title.toLowerCase().includes(searchQuery) || 
+                                         game.description.toLowerCase().includes(searchQuery);
+                    return matchesCategory && matchesSearch;
+                });
+
+                // Если игры не найдены
+                if (filteredGames.length === 0) {
+                    gamesGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+                            Игры не найдены. Попробуйте изменить критерии поиска.
+                        </div>
+                    `;
+                    loadingElement.style.display = 'none';
+                    return;
+                }
+
+                // Создание карточек игр
+                filteredGames.forEach(game => {
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.innerHTML = `
+                        <img src="${game.image}" alt="${game.title}" class="game-image">
+                        <div class="game-info">
+                            <div class="game-title">${game.title}</div>
+                            <div class="game-description">${game.description}</div>
+                            <div class="game-price">
+                                <div class="price">${game.price} ₽</div>
+                                <button class="buy-button" data-id="${game.id}">Купить</button>
+                            </div>
+                        </div>
+                    `;
+                    gamesGrid.appendChild(gameCard);
+                });
+
+                // Добавление обработчиков для кнопок покупки
+                document.querySelectorAll('.buy-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const gameId = parseInt(button.dataset.id);
+                        addToCart(gameId);
+                    });
+                });
+
+                // Добавление обработчиков для карточек игр
+                document.querySelectorAll('.game-card').forEach((card, index) => {
+                    card.addEventListener('click', () => {
+                        const gameId = filteredGames[index].id;
+                        showGameDetails(gameId);
+                    });
+                });
+
+                // Скрыть индикатор загрузки
+                loadingElement.style.display = 'none';
+            }, 500);
+        }
+
+        // Добавление игры в корзину
+        function addToCart(gameId) {
+            const game = games.find(g => g.id === gameId);
+            if (game) {
+                cart.push(game);
+                updateCartCount();
+                showNotification(`"${game.title}" добавлена в корзину!`);
+            }
+        }
+
+        // Обновление счетчика корзины
+        function updateCartCount() {
+            cartCount.textContent = cart.length;
+        }
+
+        // Показать уведомление
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Показать детали игры (заглушка)
+        function showGameDetails(gameId) {
+            const game = games.find(g => g.id === gameId);
+            if (game) {
+                alert(`Детали игры: ${game.title}\n\n${game.description}\n\nЦена: ${game.price} ₽`);
+            }
+        }
+
+        // Показать корзину (заглушка)
+        function showCart() {
+            if (cart.length === 0) {
+                alert('Ваша корзина пуста');
+                return;
+            }
+            
+            let cartContent = 'Ваша корзина:\n\n';
+            let total = 0;
+            
+            cart.forEach(game => {
+                cartContent += `• ${game.title} - ${game.price} ₽\n`;
+                total += game.price;
+            });
+            
+            cartContent += `\nИтого: ${total} ₽`;
+            
+            alert(cartContent);
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
