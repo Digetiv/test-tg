@@ -3,99 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nintendo Switch - Топ продаж</title>
+    <title>Магазин игр для Nintendo Switch</title>
     <style>
-        :root {
-            --tg-theme-bg-color: #1c1c1d;
-            --tg-theme-text-color: #ffffff;
-            --tg-theme-hint-color: #98989e;
-            --tg-theme-link-color: #5ac8fa;
-            --tg-theme-button-color: #5ac8fa;
-            --tg-theme-button-text-color: #ffffff;
-            --tg-theme-secondary-bg-color: #2c2c2e;
-        }
-        
+        /* Основные стили, соответствующие светлой теме Telegram */
         body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 16px;
-            line-height: 1.4;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #ffffff; /* Светлый фон */
+            color: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        .header {
+
+        /* Адаптивность для мобильных устройств */
+        .container {
+            width: 100%;
+            max-width: 375px; /* Стандартная ширина для мобильных Mini Apps */
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        /* Верхний баннер */
+        .header-banner {
+            background-color: #f5f5f5; /* Нейтральный фон, можно заменить на тематический */
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 16px;
+            margin: 0;
         }
-        
+
+        /* Секции топ продаж */
         .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #000000;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .product-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer; /* Интерактивность */
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 120px;
+            background-color: #e0e0e0; /* Плейсхолдер для изображения */
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .product-name {
             font-size: 16px;
             font-weight: bold;
-            margin: 20px 0 12px 0;
-            color: var(--tg-theme-hint-color);
+            margin-bottom: 8px;
         }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
-        
-        .product-card {
-            background-color: var(--tg-theme-secondary-bg-color);
-            border-radius: 10px;
-            padding: 12px;
-        }
-        
-        .product-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .product-details {
+
+        .badge {
+            background-color: #ff9500; /* Оранжевый акцент */
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 12px;
-            color: var(--tg-theme-hint-color);
-        }
-        
-        .single-product {
-            background-color: var(--tg-theme-secondary-bg-color);
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 8px;
-        }
-        
-        .price {
-            font-size: 14px;
             font-weight: bold;
-            color: var(--tg-theme-button-color);
-            margin-top: 4px;
         }
+
+        .product-price {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Специальная карточка с кнопкой + */
+        .product-card-special {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+        }
+
+        .add-button {
+            background-color: #ff9500; /* Оранжевый акцент */
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .add-button:hover {
+            background-color: #e08500;
+        }
+
+        /* Соблюдение гайдлайнов Telegram Mini Apps: нет фиксированных позиций, фокус на скролле */
     </style>
 </head>
 <body>
-    <div class="header">Новые ограничения: как бороться с сетевой ошибкой на Nintendo Switch (2155-2000 и пр.).</div>
-    
-    <div class="section-title">Топ продаж!</div>
-    <div class="products-grid">
-        <div class="product-card">
-            <div class="product-name">Nintendo Switch Online</div>
-            <div class="product-details">ONLINE</div>
-            <div class="product-details">8909/01 шт.</div>
+    <div class="container">
+        <!-- Верхний баннер -->
+        <div class="header-banner">
+            <h1 class="header-title">Новые ограничения: как бороться с сетевой ошибкой на Nintendo Switch (2155-2000 и пр.).</h1>
         </div>
-        <div class="product-card">
-            <div class="product-name">Nintendo Switch Online</div>
-            <div class="product-details">ONLINE</div>
-            <div class="product-details">8909/01 шт.</div>
+
+        <!-- Первая секция Топ продаж! -->
+        <h2 class="section-title">Топ продаж!</h2>
+        <div class="product-grid">
+            <!-- Карточка 1 -->
+            <div class="product-card">
+                <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
+                <h3 class="product-name">Nintendo Switch Online</h3>
+                <div class="badge-container">
+                    <span class="badge">ONLINE</span>
+                    <span class="badge">ONLINE</span>
+                </div>
+                <p class="product-price">8909/01 шт.</p>
+            </div>
+
+            <!-- Карточка 2 -->
+            <div class="product-card">
+                <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
+                <h3 class="product-name">Nintendo Switch Online</h3>
+                <div class="badge-container">
+                    <span class="badge">ONLINE</span>
+                    <span class="badge">ONLINE</span>
+                </div>
+                <p class="product-price">8909/01 шт.</p>
+            </div>
         </div>
-    </div>
-    
-    <div class="section-title">Топ продаж!</div>
-    <div class="single-product">
-        <div class="product-name">Koumaphise складки</div>
-        <div class="price">1399 P +</div>
+
+        <!-- Повторяющаяся секция Топ продаж! -->
+        <h2 class="section-title">Топ продаж!</h2>
+        <div class="product-grid">
+            <!-- Карточка 3 -->
+            <div class="product-card product-card-special">
+                <div>
+                    <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
+                    <h3 class="product-name">Koumajou Remilia: Scarlet Symphony</h3>
+                    <p class="product-price">1399 P</p>
+                </div>
+                <button class="add-button">+</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>
