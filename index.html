@@ -3,718 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СУНАРК - Магазин игр</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Nintendo Switch - Топ продаж</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         :root {
-            --primary: #ff3c78;
-            --secondary: #5d6afb;
-            --dark: #121826;
-            --dark-light: #1e2538;
-            --light: #f0f2f5;
-            --text: #e4e6eb;
-            --accent: #ffcc00;
+            --tg-theme-bg-color: #1c1c1d;
+            --tg-theme-text-color: #ffffff;
+            --tg-theme-hint-color: #98989e;
+            --tg-theme-link-color: #5ac8fa;
+            --tg-theme-button-color: #5ac8fa;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #2c2c2e;
         }
-
+        
         body {
-            background-color: var(--dark);
-            color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 80px;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            line-height: 1.4;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--dark-light), var(--dark));
-            padding: 15px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--accent);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .user-actions button {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .user-actions button:hover {
-            background: #4a5af9;
-        }
-
-        /* Wheel of Fortune Section */
-        .wheel-section {
-            background: linear-gradient(135deg, var(--dark-light), #2a3145);
-            padding: 30px 0;
-            text-align: center;
-            margin: 20px 0;
-            border-radius: 15px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .wheel-title {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            margin: 0 auto;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                #ff3c78 0deg 45deg,
-                #5d6afb 45deg 90deg,
-                #ffcc00 90deg 135deg,
-                #2ecc71 135deg 180deg,
-                #9b59b6 180deg 225deg,
-                #3498db 225deg 270deg,
-                #e74c3c 270deg 315deg,
-                #1abc9c 315deg 360deg
-            );
-            position: relative;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .wheel-center {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: var(--dark);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 40px;
-            background: var(--accent);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            z-index: 3;
-        }
-
-        .spin-button {
-            margin-top: 25px;
-            padding: 12px 30px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 30px;
+        
+        .header {
             font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(255, 60, 120, 0.3);
+            font-weight: bold;
+            margin-bottom: 16px;
         }
-
-        .spin-button:hover {
-            background: #ff2a6a;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255, 60, 120, 0.4);
-        }
-
-        /* Platform Selector */
-        .platform-selector {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .platform {
-            padding: 12px 25px;
-            background: var(--dark-light);
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .platform.active {
-            background: var(--secondary);
-            border-color: var(--accent);
-            box-shadow: 0 4px 10px rgba(93, 106, 251, 0.3);
-        }
-
-        /* New Releases Section */
+        
         .section-title {
-            font-size: 24px;
-            margin: 30px 0 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary);
-            display: inline-block;
-        }
-
-        .new-badge {
-            background: var(--primary);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
-            margin-left: 15px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .games-slider {
-            display: flex;
-            overflow-x: auto;
-            gap: 20px;
-            padding: 15px 5px;
-            scroll-behavior: smooth;
-        }
-
-        .games-slider::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .games-slider::-webkit-scrollbar-track {
-            background: var(--dark-light);
-            border-radius: 10px;
-        }
-
-        .games-slider::-webkit-scrollbar-thumb {
-            background: var(--secondary);
-            border-radius: 10px;
-        }
-
-        .game-card {
-            min-width: 200px;
-            background: var(--dark-light);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .game-image {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .game-info {
-            padding: 15px;
-        }
-
-        .game-title {
             font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: bold;
+            margin: 20px 0 12px 0;
+            color: var(--tg-theme-hint-color);
         }
-
-        .game-price {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .current-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .original-price {
-            font-size: 14px;
-            text-decoration: line-through;
-            color: #888;
-        }
-
-        /* Top Sales Section */
-        .top-sales-grid {
+        
+        .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-
-        .top-game-card {
-            background: var(--dark-light);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            transition: transform 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        
+        .product-card {
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 10px;
+            padding: 12px;
         }
-
-        .top-game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
         }
-
-        .top-game-image {
-            width: 100px;
-            height: 120px;
-            background: linear-gradient(135deg, #ff9d00, #ff3c78);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .top-game-info {
-            padding: 15px;
-            flex: 1;
-        }
-
-        .top-game-title {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .discount-badge {
-            background: var(--primary);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
+        
+        .product-details {
             font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 10px;
+            color: var(--tg-theme-hint-color);
         }
-
-        /* Nintendo Online Section */
-        .nintendo-section {
-            background: linear-gradient(135deg, #e60012, #8c001a);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 30px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 6px 15px rgba(230, 0, 18, 0.3);
+        
+        .single-product {
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
         }
-
-        .nintendo-content {
-            flex: 1;
-        }
-
-        .nintendo-title {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .nintendo-subtitle {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .nintendo-button {
-            background: white;
-            color: #e60012;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .nintendo-button:hover {
-            background: #f0f0f0;
-            transform: translateY(-2px);
-        }
-
-        .nintendo-image {
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+        
+        .price {
             font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark-light);
-            padding: 20px 0;
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .footer-links a {
-            color: var(--text);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: var(--primary);
-        }
-
-        .copyright {
-            font-size: 14px;
-            color: #888;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .nav-links {
-                gap: 15px;
-            }
-            
-            .nintendo-section {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-            
-            .platform-selector {
-                flex-wrap: wrap;
-            }
-            
-            .top-sales-grid {
-                grid-template-columns: 1fr;
-            }
+            font-weight: bold;
+            color: var(--tg-theme-button-color);
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">СУНАРК</div>
-                <div class="nav-links">
-                    <a href="#">Главная</a>
-                    <a href="#">Игры</a>
-                    <a href="#">Акции</a>
-                    <a href="#">Подписки</a>
-                    <a href="#">Поддержка</a>
-                </div>
-                <div class="user-actions">
-                    <button><i class="fas fa-search"></i></button>
-                    <button><i class="fas fa-shopping-cart"></i></button>
-                    <button><i class="fas fa-user"></i></button>
-                </div>
-            </div>
+    <div class="header">Новые ограничения: как бороться с сетевой ошибкой на Nintendo Switch (2155-2000 и пр.).</div>
+    
+    <div class="section-title">Топ продаж!</div>
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-name">Nintendo Switch Online</div>
+            <div class="product-details">ONLINE</div>
+            <div class="product-details">8909/01 шт.</div>
         </div>
-    </header>
-
-    <div class="container">
-        <!-- Wheel of Fortune Section -->
-        <section class="wheel-section">
-            <h2 class="wheel-title">Колесо фортуны!</h2>
-            <div class="wheel-container">
-                <div class="wheel-pointer"></div>
-                <div class="wheel" id="fortuneWheel"></div>
-                <div class="wheel-center"></div>
-            </div>
-            <button class="spin-button" id="spinButton">Крутить!</button>
-        </section>
-
-        <!-- Platform Selector -->
-        <div class="platform-selector">
-            <div class="platform active">Nintendo</div>
-            <div class="platform">Playstation</div>
-            <div class="platform">Xbox</div>
-            <div class="platform">PC</div>
+        <div class="product-card">
+            <div class="product-name">Nintendo Switch Online</div>
+            <div class="product-details">ONLINE</div>
+            <div class="product-details">8909/01 шт.</div>
         </div>
-
-        <!-- New Releases Section -->
-        <section>
-            <h2 class="section-title">НОВИНКИ! <span class="new-badge">NEW</span></h2>
-            <div class="games-slider">
-                <div class="game-card">
-                    <div class="game-image">NOCWARIS</div>
-                    <div class="game-info">
-                        <div class="game-title">NOCWARIS: Война ночи</div>
-                        <div class="game-price">
-                            <span class="current-price">599 ₽</span>
-                            <span class="original-price">899 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="game-card">
-                    <div class="game-image">CYBERRUN</div>
-                    <div class="game-info">
-                        <div class="game-title">CyberRun 2077</div>
-                        <div class="game-price">
-                            <span class="current-price">1 299 ₽</span>
-                            <span class="original-price">1 999 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="game-card">
-                    <div class="game-image">SPACE ODYSSEY</div>
-                    <div class="game-info">
-                        <div class="game-title">Space Odyssey</div>
-                        <div class="game-price">
-                            <span class="current-price">799 ₽</span>
-                            <span class="original-price">1 199 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="game-card">
-                    <div class="game-image">DRAGON REALM</div>
-                    <div class="game-info">
-                        <div class="game-title">Dragon Realm</div>
-                        <div class="game-price">
-                            <span class="current-price">999 ₽</span>
-                            <span class="original-price">1 499 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="game-card">
-                    <div class="game-image">FANTASY QUEST</div>
-                    <div class="game-info">
-                        <div class="game-title">Fantasy Quest</div>
-                        <div class="game-price">
-                            <span class="current-price">899 ₽</span>
-                            <span class="original-price">1 299 ₽</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Top Sales Section -->
-        <section>
-            <h2 class="section-title">Топ продаж!</h2>
-            <div class="top-sales-grid">
-                <div class="top-game-card">
-                    <div class="top-game-image">NOCWARIS</div>
-                    <div class="top-game-info">
-                        <div class="top-game-title">NOCWARIS: Война ночи</div>
-                        <div class="discount-badge">-33%</div>
-                        <div class="game-price">
-                            <span class="current-price">599 ₽</span>
-                            <span class="original-price">899 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="top-game-card">
-                    <div class="top-game-image">KOUMAPHISE</div>
-                    <div class="top-game-info">
-                        <div class="top-game-title">Koumaphise Складки</div>
-                        <div class="game-price">
-                            <span class="current-price">1 399 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="top-game-card">
-                    <div class="top-game-image">LEGEND OF ZELDA</div>
-                    <div class="top-game-info">
-                        <div class="top-game-title">The Legend of Zelda</div>
-                        <div class="discount-badge">-25%</div>
-                        <div class="game-price">
-                            <span class="current-price">2 999 ₽</span>
-                            <span class="original-price">3 999 ₽</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="top-game-card">
-                    <div class="top-game-image">MARIO KART</div>
-                    <div class="top-game-info">
-                        <div class="top-game-title">Mario Kart 8 Deluxe</div>
-                        <div class="game-price">
-                            <span class="current-price">3 499 ₽</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Nintendo Online Section -->
-        <section class="nintendo-section">
-            <div class="nintendo-content">
-                <h2 class="nintendo-title">Nintendo Switch Online</h2>
-                <p class="nintendo-subtitle">Играйте онлайн с друзьями по всему миру!</p>
-                <button class="nintendo-button">ПОДКЛЮЧИТЬ</button>
-            </div>
-            <div class="nintendo-image">
-                ONLINE<br>8909/01 шт.
-            </div>
-        </section>
     </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">О нас</a>
-                <a href="#">Контакты</a>
-                <a href="#">Политика конфиденциальности</a>
-                <a href="#">Условия использования</a>
-            </div>
-            <div class="copyright">
-                &copy; 2023 СУНАРК. Все права защищены.
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Wheel of Fortune functionality
-        const wheel = document.getElementById('fortuneWheel');
-        const spinButton = document.getElementById('spinButton');
-        let isSpinning = false;
-        
-        spinButton.addEventListener('click', () => {
-            if (isSpinning) return;
-            
-            isSpinning = true;
-            spinButton.disabled = true;
-            
-            // Generate random rotation (between 5 and 10 full rotations + random angle)
-            const rotations = 5 + Math.floor(Math.random() * 5);
-            const extraDegrees = Math.floor(Math.random() * 360);
-            const totalRotation = rotations * 360 + extraDegrees;
-            
-            wheel.style.transform = `rotate(${totalRotation}deg)`;
-            
-            // Enable button again after animation
-            setTimeout(() => {
-                isSpinning = false;
-                spinButton.disabled = false;
-                
-                // Show alert with prize
-                const prizes = [
-                    "Скидка 10% на следующую покупку!",
-                    "Бесплатная игра из каталога!",
-                    "500 бонусных баллов!",
-                    "Скидка 15% на подписку!",
-                    "Подарочный сертификат на 300 руб!",
-                    "Эксклюзивный скин для персонажа!",
-                    "Месяц бесплатной подписки!",
-                    "Ранний доступ к новой игре!"
-                ];
-                
-                const prizeIndex = Math.floor((360 - (totalRotation % 360)) / 45);
-                alert(`Поздравляем! Вы выиграли: ${prizes[prizeIndex]}`);
-            }, 4000);
-        });
-
-        // Platform selector functionality
-        const platforms = document.querySelectorAll('.platform');
-        
-        platforms.forEach(platform => {
-            platform.addEventListener('click', () => {
-                platforms.forEach(p => p.classList.remove('active'));
-                platform.classList.add('active');
-            });
-        });
-
-        // Simulate game card hover effects
-        const gameCards = document.querySelectorAll('.game-card, .top-game-card');
-        
-        gameCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-5px)';
-                card.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-                card.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-            });
-        });
-    </script>
+    
+    <div class="section-title">Топ продаж!</div>
+    <div class="single-product">
+        <div class="product-name">Koumaphise складки</div>
+        <div class="price">1399 P +</div>
+    </div>
 </body>
 </html>
