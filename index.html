@@ -72,11 +72,8 @@
 
     .carousel {
       display: flex;
-      justify-content: center;
-      align-items: center;
       gap: 12px;
       will-change: transform;
-      transition: transform 0.6s ease-in-out;
     }
 
     .card {
@@ -86,13 +83,7 @@
       background: #14141f;
       overflow: hidden;
       position: relative;
-      transform: scale(0.85);
-      transition: transform 0.6s ease-in-out;
-      opacity: 0.7;
-    }
-    .card.active {
-      transform: scale(1);
-      opacity: 1;
+      transition: transform 0.5s ease;
     }
     .card img { width: 100%; height: 160px; object-fit: cover; }
     .card .meta { padding: 10px; }
@@ -179,10 +170,12 @@
 
     function formatPrice(v){ return v.toLocaleString('ru-RU') + ' ₽'; }
 
-    games.forEach((g,i)=>{
+    // Создаем дубликаты для плавного бесконечного цикла
+    const extendedGames = [...games, ...games, ...games];
+
+    extendedGames.forEach(g=>{
       const card = document.createElement('div');
       card.className = 'card';
-      if (i===0) card.classList.add('active');
       card.innerHTML = `
         <img src="${g.img}" alt="${g.name}">
         <div class="meta">
@@ -198,17 +191,17 @@
     });
 
     const cards = carousel.children;
-    let index = 0;
+    let scrollX = 0;
 
-    function cycleCarousel() {
-      cards[index].classList.remove('active');
-      index = (index + 1) % cards.length;
-      cards[index].classList.add('active');
-      const offset = -index * (cards[index].offsetWidth + 12);
-      carousel.style.transform = `translateX(${offset + 80}px)`;
-      setTimeout(cycleCarousel, 2500);
+    function autoScroll() {
+      scrollX += 1;
+      carousel.style.transform = `translateX(${-scrollX}px)`;
+      if (scrollX > (cards[0].offsetWidth + 12) * games.length) {
+        scrollX = 0; // сброс для бесконечного цикла
+      }
+      requestAnimationFrame(autoScroll);
     }
-    setTimeout(cycleCarousel, 2500);
+    requestAnimationFrame(autoScroll);
 
     function addToCart(g){ cart.push(g); const sum = cart.reduce((s,i)=>s+i.priceNew,0); cartTotal.textContent = formatPrice(sum); }
 
