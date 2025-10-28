@@ -78,7 +78,7 @@
 
     .card {
       flex: 0 0 70%;
-      max-width: 260px;
+      max-width: 150px;
       border-radius: 16px;
       background: #14141f;
       overflow: hidden;
@@ -195,7 +195,7 @@
     function autoScroll() {
       scrollX += 1;
       carousel.style.transform = `translateX(${-scrollX}px)`;
-      if (scrollX > (cards[0].offsetWidth + 12) * games.length) {
+      if (scrollX > (cards[0].offsetWidth + 3) * games.length) {
         scrollX = 0; // сброс для бесконечного цикла
       }
       requestAnimationFrame(autoScroll);
