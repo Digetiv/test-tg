@@ -171,6 +171,7 @@
 
     // Создаем дубликаты для плавного бесконечного цикла
     const extendedGames = [...games, ...games, ...games];
+    const extendedGames2 = [...games, ...games, ...games];
 
     extendedGames.forEach(g=>{
       const card = document.createElement('div');
@@ -195,7 +196,7 @@
     function autoScroll() {
       scrollX += 1;
       carousel.style.transform = `translateX(${-scrollX}px)`;
-      if (scrollX > (cards[0].offsetWidth + 3) * games.length) {
+      if (scrollX > (cards[0].offsetWidth + 22) * games.length) {
         scrollX = 0; // сброс для бесконечного цикла
       }
       requestAnimationFrame(autoScroll);
