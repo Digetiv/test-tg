@@ -136,6 +136,8 @@
   <main>
     <section class="carousel-wrap" id="catalog">
       <div class="carousel" id="carousel"></div>
+      <div class="carousel" id="carousel"></div>
+      <div class="carousel" id="carousel"></div>
     </section>
 
     <section class="about" id="about">
@@ -171,7 +173,6 @@
 
     // Создаем дубликаты для плавного бесконечного цикла
     const extendedGames = [...games, ...games, ...games];
-    const extendedGames2 = [...games, ...games, ...games];
 
     extendedGames.forEach(g=>{
       const card = document.createElement('div');
@@ -194,9 +195,9 @@
     let scrollX = 0;
 
     function autoScroll() {
-      scrollX += 1;
+      scrollX += 0.5;
       carousel.style.transform = `translateX(${-scrollX}px)`;
-      if (scrollX > (cards[0].offsetWidth + 22) * games.length) {
+      if (scrollX > (cards[0].offsetWidth + 12) * games.length) {
         scrollX = 0; // сброс для бесконечного цикла
       }
       requestAnimationFrame(autoScroll);
