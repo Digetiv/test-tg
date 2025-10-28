@@ -1,221 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магазин Видеоигр - Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GameMini — Магазин видеоигр</title>
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --panel:#0f1116;
+      --muted:#9aa3b2;
+      --neon:#6ee0ff;
+      --accent:#8a6bff;
+      --glass: rgba(255,255,255,0.03);
+      --card-w: 220px;
+      --card-h: 320px;
+      --transition: 400ms cubic-bezier(.2,.9,.2,1);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg, #050507 0%, #0b0b0f 100%);
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;flex-direction:column;min-height:100vh;
     }
 
-    body {
-        font-family: Arial, sans-serif;
+    /* Header */
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;gap:12px;
+      position:sticky;top:0;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      z-index:50;
+    }
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo .icon{
+      width:44px;height:44px;border-radius:10px;
+      background:linear-gradient(135deg,var(--neon),var(--accent));
+      display:grid;place-items:center;font-weight:700;color:#02101a;box-shadow:0 6px 18px rgba(106,164,255,0.08);
+    }
+    .logo .title{font-weight:700;font-size:16px;letter-spacing:0.2px}
+
+    /* Menu button */
+    .menu-btn{background:transparent;border:0;color:var(--neon);font-size:22px;padding:10px;border-radius:8px;cursor:pointer}
+    .menu-btn:active{transform:scale(.98)}
+
+    /* Right sliding sidebar + overlay */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:var(--transition);z-index:48}
+    .sidebar{
+      position:fixed;right:0;top:0;height:100%;width:300px;max-width:80vw;padding:28px;background:linear-gradient(180deg, rgba(12,12,16,0.95), rgba(12,12,16,0.98));box-shadow:-20px 0 40px rgba(0,0,0,0.6);
+      transform:translateX(110%);transition:var(--transition);z-index:49;border-left:1px solid rgba(255,255,255,0.03);
+    }
+    .sidebar.open{transform:translateX(0)}
+    .overlay.show{opacity:1;pointer-events:auto}
+    .sidebar nav{display:flex;flex-direction:column;gap:16px}
+    .sidebar a{color:var(--neon);text-decoration:none;font-weight:600;padding:10px;border-radius:8px}
+    .sidebar p{color:var(--muted);margin-top:18px}
+
+    /* Main content */
+    main{flex:1;padding:18px;display:flex;flex-direction:column;gap:28px}
+
+    /* Carousel */
+    .carousel-wrap{position:relative;padding:24px 6px;overflow:visible}
+    .carousel{
+      display:flex;gap:18px;align-items:center;transition:transform var(--transition);will-change:transform;padding:36px 12px;
+      /* subtle glow */
+      filter:drop-shadow(0 8px 30px rgba(0,0,0,0.8));
     }
 
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        background-color: #333;
-        color: #fff;
+    .card{
+      flex:0 0 var(--card-w);height:var(--card-h);border-radius:14px;background:linear-gradient(180deg,#0f1120, #0b0c12);overflow:hidden;position:relative;cursor:pointer;transition:transform var(--transition),box-shadow var(--transition);
+      display:flex;flex-direction:column;align-items:stretch;padding:10px;border:1px solid rgba(255,255,255,0.03)
+    }
+    .card .cover{flex:1;border-radius:8px;overflow:hidden;background:#0b0b0b;display:grid;place-items:center}
+    .card img{width:100%;height:100%;object-fit:cover;display:block}
+    .card .meta{padding-top:10px;display:flex;flex-direction:column;gap:6px}
+    .name{font-weight:700;font-size:15px}
+    .price-row{display:flex;align-items:center;gap:10px}
+    .old{color:var(--muted);text-decoration:line-through;font-size:13px}
+    .new{font-weight:800;color:var(--neon)}
+
+    .add-to-cart{position:absolute;right:10px;bottom:10px;background:linear-gradient(135deg,var(--accent),var(--neon));width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:#02121a;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(106,164,255,0.12);transition:transform 120ms}
+    .add-to-cart:active{transform:scale(.96)}
+
+    /* Center focus */
+    .card.center{transform:translateY(-8px) scale(1.12);z-index:5;box-shadow:0 10px 40px rgba(50,90,200,0.18)}
+    .card.side{transform:scale(.92);opacity:.9}
+
+    /* About block */
+    .about{padding:20px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02)}
+    .about h3{margin:0 0 8px 0}
+    .about p{color:var(--muted);margin:0}
+
+    /* Footer fixed */
+    footer{position:fixed;left:0;right:0;bottom:0;height:62px;background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(6px);z-index:60}
+    .profile{display:flex;align-items:center;gap:10px}
+    .profile .avatar{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--neon));display:grid;place-items:center;color:#02121a;font-weight:700}
+    .cart{display:flex;align-items:center;gap:10px;font-weight:700}
+
+    /* Modal (game detail) */
+    .modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.6);visibility:hidden;opacity:0;transition:var(--transition);z-index:70}
+    .modal.show{visibility:visible;opacity:1}
+    .modal .panel{width:min(920px,95vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#0b0c11,#07080a);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
+    .modal .panel .top{display:flex;gap:18px}
+    .modal img{width:260px;height:360px;object-fit:cover;border-radius:10px}
+    .modal h2{margin:0}
+    .modal .desc{color:var(--muted);margin-top:12px}
+    .buy-row{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+    .cta{padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,var(--neon),var(--accent));border:none;color:#02121a;font-weight:800;cursor:pointer}
+
+    /* Small screens */
+    @media (max-width:720px){
+      :root{--card-w:160px;--card-h:240px}
+      .sidebar{width:86vw}
+      .modal .panel{padding:12px}
+      .modal img{width:160px;height:220px}
     }
 
-    .logo img {
-        height: 40px;
-    }
-
-    .menu-button {
-        font-size: 30px;
-        cursor: pointer;
-    }
-
-    .side-menu {
-        position: fixed;
-        top: 0;
-        right: -250px;
-        width: 250px;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        padding: 20px;
-        transition: right 0.3s ease;
-    }
-
-    .side-menu ul {
-        list-style-type: none;
-    }
-
-    .side-menu ul li {
-        margin: 20px 0;
-    }
-
-    .side-menu ul li a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 18px;
-    }
-
-    #carousel {
-        padding: 20px;
-    }
-
-    .carousel-container {
-        display: flex;
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .carousel-card {
-        margin: 0 10px;
-        transition: transform 0.3s ease;
-    }
-
-    .carousel-card img {
-        width: 200px;
-        height: 300px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    .game-info {
-        text-align: center;
-    }
-
-    .price {
-        font-size: 18px;
-        margin: 5px 0;
-    }
-
-    .old-price {
-        text-decoration: line-through;
-        color: red;
-    }
-
-    .add-to-cart {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-
-    footer {
-        display: flex;
-        justify-content: space-between;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        padding: 10px;
-        background-color: #333;
-        color: #fff;
-    }
-
-    footer .user-profile,
-    footer .cart {
-        font-size: 18px;
-    }
-
-    #about {
-        padding: 20px;
-        text-align: center;
-    }
-
-    #about h2 {
-        margin-bottom: 10px;
-    }
-
-    </style>
+  </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/logo.png" alt="Логотип магазина">
-        </div>
-        <div class="menu-button" onclick="toggleMenu()">
-            ☰
-        </div>
-    </header>
-
-    <div id="side-menu" class="side-menu">
-        <ul>
-            <li><a href="#about">О нас</a></li>
-            <li><a href="#catalog">Каталог</a></li>
-            <li><a href="#contact">Контакты</a></li>
-        </ul>
+  <header>
+    <div class="logo" aria-label="logo">
+      <div class="icon">G</div>
+      <div class="title">GameMini</div>
     </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Открыть меню">☰</button>
+  </header>
 
-    <section id="carousel">
-        <div class="carousel-container">
-            <div class="carousel-card">
-                <img src="images/game1.jpg" alt="Игра 1">
-                <div class="game-info">
-                    <h3>Игра 1</h3>
-                    <p class="price">
-                        <span class="old-price">1500 ₽</span> 1200 ₽
-                    </p>
-                    <button class="add-to-cart">+</button>
-                </div>
-            </div>
-            <!-- Повторить для других игр -->
-        </div>
+  <div class="overlay" id="overlay"></div>
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <nav>
+      <a href="#home">Главная</a>
+      <a href="#catalog">Каталог</a>
+      <a href="#contacts">Контакты</a>
+      <a href="#about">О нас</a>
+    </nav>
+    <p>Минималистичный магазин видеоигр для Telegram Mini App. Быстро, удобно, стильно.</p>
+  </aside>
+
+  <main>
+    <section class="carousel-wrap" id="catalog">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h2 style="margin:0">Популярные игры</h2>
+        <div style="color:var(--muted);font-size:14px">Автопрокрутка — центральный фокус</div>
+      </div>
+      <div class="carousel" id="carousel" role="list"></div>
     </section>
 
-    <section id="about">
-        <h2>О нас</h2>
-        <p>Мы продаем лучшие видеоигры для всех платформ!</p>
+    <section class="about" id="about">
+      <h3>О нас</h3>
+      <p>Наша миссия — сделать доступными лучшие игры для игроков по всему миру. В ассортименте: инди-новинки, хиты AAA, коллекционные издания — всё с удобной доставкой и безопасной оплатой. Преимущества: быстрый выбор, честные цены, поддержка сообщества.</p>
     </section>
+  </main>
 
-    <footer>
-        <div class="user-profile">
-            <p>Профиль</p>
+  <footer>
+    <div class="profile">
+      <div class="avatar">U</div>
+      <div>
+        <div style="font-weight:700">@player_one</div>
+        <div style="font-size:12px;color:var(--muted)">Онлайн</div>
+      </div>
+    </div>
+    <div class="cart" id="footerCart">
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div id="cartTotal">0 ₽</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal detail -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <div style="display:flex;justify-content:flex-end"><button id="closeModal" style="background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer">✕</button></div>
+      <div class="top">
+        <img id="modalImg" src="" alt="cover"/>
+        <div style="flex:1">
+          <h2 id="modalTitle">Название игры</h2>
+          <div style="margin-top:8px;color:var(--muted);font-weight:700" id="modalPrice">0 ₽</div>
+          <p class="desc" id="modalDesc">Описание...</p>
+          <div class="buy-row">
+            <div style="color:var(--muted)">Платформы: PC, Steam</div>
+            <button class="cta" id="buyNow">Купить сейчас</button>
+          </div>
         </div>
-        <div class="cart">
-            <p>Корзина: 3000 ₽</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data
+    const games = [
+      {id:1,name:'Aetherium: Dawn',priceOld:2999,priceNew:1499,img:'https://via.placeholder.com/400x600?text=Aetherium'},
+      {id:2,name:'Neon Drift',priceOld:1999,priceNew:999,img:'https://via.placeholder.com/400x600?text=Neon+Drift'},
+      {id:3,name:'Shadow Protocol',priceOld:2499,priceNew:1799,img:'https://via.placeholder.com/400x600?text=Shadow+Protocol'},
+      {id:4,name:'Galactic Brewers',priceOld:1299,priceNew:649,img:'https://via.placeholder.com/400x600?text=Galactic+Brewers'},
+      {id:5,name:'Cybernova',priceOld:3499,priceNew:2799,img:'https://via.placeholder.com/400x600?text=Cybernova'},
+      {id:6,name:'Rune Quest',priceOld:1599,priceNew:799,img:'https://via.placeholder.com/400x600?text=Rune+Quest'}
+    ];
+
+    const carousel = document.getElementById('carousel');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPrice = document.getElementById('modalPrice');
+    const buyNow = document.getElementById('buyNow');
+    const cartTotal = document.getElementById('cartTotal');
+
+    let cart = [];
+
+    function formatPrice(v){return v.toLocaleString('ru-RU') + ' ₽'}
+
+    // Build cards
+    games.forEach(g=>{
+      const card = document.createElement('div');card.className='card';card.dataset.id=g.id;
+      card.innerHTML = `
+        <div class="cover"><img src="${g.img}" alt="${g.name} cover"/></div>
+        <div class="meta">
+          <div class="name">${g.name}</div>
+          <div class="price-row"><div class="old">${formatPrice(g.priceOld)}</div><div class="new">${formatPrice(g.priceNew)}</div></div>
         </div>
-    </footer>
+        <button class="add-to-cart" aria-label="Добавить в корзину">＋</button>
+      `;
+      // click on card opens modal (but not when clicking add-to-cart)
+      card.addEventListener('click', (e)=>{
+        if(e.target.closest('.add-to-cart')) return;
+        openDetail(g);
+      });
+      // add to cart
+      card.querySelector('.add-to-cart').addEventListener('click', (e)=>{
+        e.stopPropagation();addToCart(g);animateAdd(e.currentTarget);
+      });
 
-    <script src="script.js"></script>
+      carousel.appendChild(card);
+    });
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+    // Centering logic
+    let current = 0;
+    const cards = () => Array.from(carousel.children);
+    function updateCarousel(animate=true){
+      const list = cards();
+      if(list.length===0) return;
+      // compute center position
+      const wrapW = carousel.parentElement.clientWidth;
+      const cardW = list[0].getBoundingClientRect().width + 18; // gap
+      const centerOffset = (wrapW - (cardW - 18)) / 2 - 12; // tweak
+      const translateX = - current * cardW + centerOffset;
+      if(!animate) carousel.style.transition='none'; else carousel.style.transition='transform var(--transition)';
+      carousel.style.transform = `translateX(${translateX}px)`;
+      // classes
+      list.forEach((c,i)=>{
+        c.classList.remove('center','side');
+        if(i===current) c.classList.add('center');
+        else if(Math.abs(i-current)<=2) c.classList.add('side');
+      });
+    }
 
-       // Открытие/закрытие меню
-        function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            if (menu.style.right === '0px') {
-                menu.style.right = '-250px';
-            } else {
-                menu.style.right = '0';
-            }
-        }
+    // Auto-advance with smooth transitions
+    let autoTimer = null;
+    function startAuto(){
+      stopAuto();
+      autoTimer = setInterval(()=>{ next(); }, 2800);
+    }
+    function stopAuto(){ if(autoTimer) clearInterval(autoTimer); autoTimer=null }
 
-        // Смена карточек в карусели
-        let currentCard = 0;
-        const cards = document.querySelectorAll('.carousel-card');
-        setInterval(() => {
-            // Убираем старую большую карточку
-            cards[currentCard].style.transform = 'scale(0.8)';
-            currentCard = (currentCard + 1) % cards.length;
-            // Добавляем новую большую карточку
-            cards[currentCard].style.transform = 'scale(1)';
-        }, 3000);
+    function next(){ current = (current+1) % cards().length; updateCarousel(); }
+    function prev(){ current = (current-1+cards().length) % cards().length; updateCarousel(); }
 
-        // Пример добавления товара в корзину
-        const addButtons = document.querySelectorAll('.add-to-cart');
-        addButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                alert('Игра добавлена в корзину!');
-            });
-        });
-    </script>
+    // Pause on hover/touch interaction
+    carousel.addEventListener('mouseenter', stopAuto);
+    carousel.addEventListener('mouseleave', startAuto);
+    carousel.addEventListener('touchstart', stopAuto, {passive:true});
+    carousel.addEventListener('touchend', startAuto, {passive:true});
+
+    // Allow swipe
+    let startX=0,dx=0;
+    carousel.addEventListener('pointerdown', (e)=>{ startX=e.clientX; carousel.setPointerCapture(e.pointerId); stopAuto(); });
+    carousel.addEventListener('pointermove', (e)=>{ if(startX===0) return; dx = e.clientX - startX; });
+    carousel.addEventListener('pointerup', (e)=>{ if(Math.abs(dx)>40){ if(dx<0) next(); else prev(); } startX=0; dx=0; startAuto(); });
+
+    // Menu interactions
+    function openMenu(){ sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); }
+    function closeMenu(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); }
+    menuBtn.addEventListener('click', ()=>{ if(sidebar.classList.contains('open')) closeMenu(); else openMenu(); });
+    overlay.addEventListener('click', ()=>{ closeMenu(); closeModalDetail(); });
+
+    // Modal detail
+    function openDetail(g){ modalImg.src = g.img; modalTitle.textContent = g.name; modalDesc.textContent = `Полное описание игры «${g.name}» — захватывающий игровой опыт, отличная графика и захватывающий геймплей.`; modalPrice.textContent = formatPrice(g.priceNew); modal.classList.add('show'); }
+    function closeModalDetail(){ modal.classList.remove('show'); }
+    closeModal.addEventListener('click', closeModalDetail);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModalDetail(); });
+    buyNow.addEventListener('click', ()=>{ alert('Переход к оплате (симуляция).'); });
+
+    // Cart
+    function addToCart(g){ cart.push(g); updateCart(); }
+    function updateCart(){ const sum=cart.reduce((s,i)=>s+i.priceNew,0); cartTotal.textContent = formatPrice(sum); }
+
+    function animateAdd(btn){ btn.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260}); }
+
+    // Initial layout
+    window.addEventListener('resize', ()=> updateCarousel(false));
+    updateCarousel(false);
+    startAuto();
+
+    // Basic keyboard controls for accessibility (left/right)
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowRight') next();
+      if(e.key==='ArrowLeft') prev();
+      if(e.key==='Escape'){ closeMenu(); closeModalDetail(); }
+    });
+
+    // Make central card larger on load after images ready
+    window.addEventListener('load', ()=>{ updateCarousel(); setTimeout(()=>updateCarousel(),300); });
+
+  </script>
 </body>
 </html>
