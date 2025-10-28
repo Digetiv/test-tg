@@ -69,6 +69,7 @@
     main { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 30px; }
 
     .carousel-wrap { position: relative; overflow: hidden; width: 100%; }
+    .carousel-title { margin: 10px 0; font-size: 18px; font-weight: 600; color: var(--neon); }
 
     .carousel {
       display: flex;
@@ -129,15 +130,21 @@
   <aside class="sidebar" id="sidebar">
     <a href="#">Главная</a>
     <a href="#catalog">Каталог</a>
+    <a href="#subs">Подписки</a>
     <a href="#about">О нас</a>
-    <a href="#contacts">Контакты</a>
   </aside>
 
   <main>
+    <!-- 🔹 Первая карусель (основной каталог игр) -->
     <section class="carousel-wrap" id="catalog">
-      <div class="carousel" id="carousel"></div></section>
-    <section class="carousel-wrap" id="catalog">
-      <div class="carousel" id="carousel"></div>
+      <h3 class="carousel-title">Популярные игры</h3>
+      <div class="carousel" id="carousel-main"></div>
+    </section>
+
+    <!-- 🔹 Вторая карусель (например, игры по подписке) -->
+    <section class="carousel-wrap" id="subs">
+      <h3 class="carousel-title">Игры по подписке</h3>
+      <div class="carousel" id="carousel-subs"></div>
     </section>
 
     <section class="about" id="about">
@@ -155,65 +162,90 @@
   </footer>
 
   <script>
-    const games = [
-      {id:1,name:'Hogwarts Legacy',priceOld:2999,priceNew:599,img:'zelda.jpg'},
-      {id:2,name:'Zelda Online',priceOld:1290,priceNew:899,img:'Hogwarts.png'},
-      {id:3,name:'Metro Redux',priceOld:1990,priceNew:799,img:'zelda.jpg'},
-      {id:5,name:'Aether Online',priceOld:1399,priceNew:599,img:'Hogwarts.png'}
+    // --- Игры для первой карусели ---
+    const gamesMain = [
+      {id:1,name:'Hogwarts Legacy',priceOld:2999,priceNew:599,img:'hogwarts.png'},
+      {id:2,name:'Zelda Online',priceOld:1290,priceNew:899,img:'zelda.jpg'},
+      {id:3,name:'Metro Redux',priceOld:1990,priceNew:799,img:'metro.jpg'},
+      {id:4,name:'Aether Online',priceOld:1399,priceNew:599,img:'aether.jpg'}
     ];
 
-    const carousel = document.getElementById('carousel');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
+    // --- Игры для второй карусели (по подписке) ---
+    const gamesSubs = [
+      {id:5,name:'Game Pass Ultimate',priceOld:999,priceNew:499,img:'gamepass.jpg'},
+      {id:6,name:'EA Play',priceOld:799,priceNew:299,img:'ea.jpg'},
+      {id:7,name:'Ubisoft+',priceOld:999,priceNew:399,img:'ubi.jpg'},
+      {id:8,name:'PlayStation Plus',priceOld:899,priceNew:499,img:'ps.jpg'}
+    ];
+
     const cartTotal = document.getElementById('cartTotal');
     let cart = [];
 
-    function formatPrice(v){ return v.toLocaleString('ru-RU') + ' ₽'; }
+    // Универсальная функция создания каруселей
+    function createCarousel(games, containerId) {
+      const carousel = document.getElementById(containerId);
+      const extended = [...games, ...games, ...games]; // дублирование для бесконечной прокрутки
 
-    // Создаем дубликаты для плавного бесконечного цикла
-    const extendedGames = [...games, ...games, ...games];
-
-    extendedGames.forEach(g=>{
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <img src="${g.img}" alt="${g.name}">
-        <div class="meta">
-          <div class="name">${g.name}</div>
-          <div class="price-row"><span class="old">${formatPrice(g.priceOld)}</span><span class="new">${formatPrice(g.priceNew)}</span></div>
-        </div>
-        <button class="add-to-cart">＋</button>
-      `;
-      card.querySelector('.add-to-cart').addEventListener('click', e => {
-        e.stopPropagation(); addToCart(g);
+      extended.forEach(g => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${g.img}" alt="${g.name}">
+          <div class="meta">
+            <div class="name">${g.name}</div>
+            <div class="price-row"><span class="old">${g.priceOld} ₽</span><span class="new">${g.priceNew} ₽</span></div>
+          </div>
+          <button class="add-to-cart">＋</button>
+        `;
+        card.querySelector('.add-to-cart').addEventListener('click', e => {
+          e.stopPropagation();
+          addToCart(g);
+        });
+        carousel.appendChild(card);
       });
-      carousel.appendChild(card);
-    });
 
-    const cards = carousel.children;
-    let scrollX = 0;
-
-    function autoScroll() {
-      scrollX += 0.5;
-      carousel.style.transform = `translateX(${-scrollX}px)`;
-      if (scrollX > (cards[0].offsetWidth + 12) * games.length) {
-        scrollX = 0; // сброс для бесконечного цикла
+      // Автоматическая плавная прокрутка
+      let scrollX = 0;
+      function autoScroll() {
+        scrollX += 0.5;
+        carousel.style.transform = `translateX(${-scrollX}px)`;
+        if (scrollX > (carousel.children[0].offsetWidth + 12) * games.length) {
+          scrollX = 0;
+        }
+        requestAnimationFrame(autoScroll);
       }
       requestAnimationFrame(autoScroll);
     }
-    requestAnimationFrame(autoScroll);
 
-    function addToCart(g){ cart.push(g); const sum = cart.reduce((s,i)=>s+i.priceNew,0); cartTotal.textContent = formatPrice(sum); }
+    // --- Добавление в корзину ---
+    function addToCart(g) {
+      cart.push(g);
+      const sum = cart.reduce((s, i) => s + i.priceNew, 0);
+      cartTotal.textContent = sum.toLocaleString('ru-RU') + ' ₽';
+    }
 
-    menuBtn.addEventListener('click', ()=> {
+    // --- Инициализация каруселей ---
+    createCarousel(gamesMain, 'carousel-main');
+    createCarousel(gamesSubs, 'carousel-subs');
+
+    // --- Меню ---
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    menuBtn.addEventListener('click', () => {
       sidebar.classList.toggle('open');
       overlay.classList.toggle('show');
     });
-    overlay.addEventListener('click', ()=> {
+    overlay.addEventListener('click', () => {
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
     });
+
+    // ✅ Чтобы добавить новую тематическую карусель:
+    // 1. Создай массив с играми, например const gamesIndie = [...];
+    // 2. Добавь в HTML новую секцию <section><div class="carousel" id="carousel-indie"></div></section>
+    // 3. В JS вызови createCarousel(gamesIndie, 'carousel-indie');
   </script>
 </body>
 </html>
