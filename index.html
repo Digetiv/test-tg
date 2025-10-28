@@ -6,319 +6,216 @@
     <title>Магазин Видеоигр - Telegram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            color: #333;
-            overflow-x: hidden;
-        }
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
 
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-        }
+    body {
+        font-family: Arial, sans-serif;
+    }
 
-        .shop-icon {
-            width: 40px;
-            height: 40px;
-            background-color: #ccc; /* Плейсхолдер для иконки */
-            border-radius: 50%;
-        }
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+    }
 
-        .menu-button {
-            width: 40px;
-            height: 40px;
-            background-color: #ccc; /* Плейсхолдер для кнопки меню */
-            border: none;
-            cursor: pointer;
-        }
+    .logo img {
+        height: 40px;
+    }
 
-        /* Menu */
-        .menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background-color: rgba(255,255,255,0.8);
-            transition: right 0.3s ease;
-            padding: 20px;
-            box-shadow: -2px 0 4px rgba(0,0,0,0.2);
-            z-index: 20;
-        }
+    .menu-button {
+        font-size: 30px;
+        cursor: pointer;
+    }
 
-        .menu.active {
-            right: 0;
-        }
+    .side-menu {
+        position: fixed;
+        top: 0;
+        right: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 20px;
+        transition: right 0.3s ease;
+    }
 
-        .menu ul {
-            list-style: none;
-            padding: 0;
-        }
+    .side-menu ul {
+        list-style-type: none;
+    }
 
-        .menu li {
-            margin: 10px 0;
-        }
+    .side-menu ul li {
+        margin: 20px 0;
+    }
 
-        .menu a {
-            text-decoration: none;
-            color: #333;
-        }
+    .side-menu ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+    }
 
-        /* Carousel */
-        .carousel-container {
-            margin-top: 60px; /* Под header */
-            overflow: hidden;
-            position: relative;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    #carousel {
+        padding: 20px;
+    }
 
-        .carousel {
-            display: flex;
-            transition: transform 0.5s ease;
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-        }
+    .carousel-container {
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        justify-content: center;
+    }
 
-        .game-card {
-            flex-shrink: 0;
-            width: 200px;
-            margin: 0 10px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.5s ease, width 0.5s ease;
-            position: relative;
-        }
+    .carousel-card {
+        margin: 0 10px;
+        transition: transform 0.3s ease;
+    }
 
-        .game-card.center {
-            transform: scale(1.2);
-            width: 250px;
-            z-index: 5;
-        }
+    .carousel-card img {
+        width: 200px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
 
-        .game-image {
-            width: 100%;
-            height: 150px;
-            background-color: #ddd; /* Плейсхолдер для изображения */
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
+    .game-info {
+        text-align: center;
+    }
 
-        .game-title {
-            font-size: 18px;
-            margin: 10px 0 5px;
-        }
+    .price {
+        font-size: 18px;
+        margin: 5px 0;
+    }
 
-        .price {
-            font-size: 16px;
-        }
+    .old-price {
+        text-decoration: line-through;
+        color: red;
+    }
 
-        .new-price {
-            color: red;
-            font-weight: bold;
-        }
+    .add-to-cart {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-        .old-price {
-            text-decoration: line-through;
-            color: gray;
-            margin-left: 5px;
-        }
+    footer {
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+    }
 
-        .add-to-cart {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            background-color: #ccc; /* Плейсхолдер для иконки */
-            border-radius: 50%;
-            cursor: pointer;
-        }
+    footer .user-profile,
+    footer .cart {
+        font-size: 18px;
+    }
 
-        /* About Us */
-        .about {
-            padding: 20px;
-            background-color: #fff;
-            margin: 20px 0;
-            text-align: center;
-        }
+    #about {
+        padding: 20px;
+        text-align: center;
+    }
 
-        /* Footer */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-        }
+    #about h2 {
+        margin-bottom: 10px;
+    }
 
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            background-color: #ccc; /* Плейсхолдер для профиля */
-            border-radius: 50%;
-        }
-
-        .cart {
-            display: flex;
-            align-items: center;
-        }
-
-        .cart-icon {
-            width: 30px;
-            height: 30px;
-            background-color: #ccc; /* Плейсхолдер для корзины */
-            margin-right: 5px;
-        }
-
-        .cart-total {
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="shop-icon"></div>
-        <button class="menu-button" onclick="toggleMenu()"></button>
+    <header>
+        <div class="logo">
+            <img src="images/logo.png" alt="Логотип магазина">
+        </div>
+        <div class="menu-button" onclick="toggleMenu()">
+            ☰
+        </div>
     </header>
 
-    <div class="menu" id="menu">
+    <div id="side-menu" class="side-menu">
         <ul>
-            <li><a href="#home">Главная</a></li>
+            <li><a href="#about">О нас</a></li>
             <li><a href="#catalog">Каталог</a></li>
-            <li><a href="#contacts">Контакты</a></li>
-            <!-- Добавьте больше ссылок по необходимости -->
+            <li><a href="#contact">Контакты</a></li>
         </ul>
     </div>
 
-    <div class="carousel-container">
-        <div class="carousel" id="carousel">
-            <!-- Пример карточек игр -->
-            <div class="game-card" onclick="openGamePage(1)">
-                <div class="game-image"></div>
-                <div class="game-title">Игра 1</div>
-                <div class="price">
-                    <span class="new-price">499₽</span>
-                    <span class="old-price">999₽</span>
+    <section id="carousel">
+        <div class="carousel-container">
+            <div class="carousel-card">
+                <img src="images/game1.jpg" alt="Игра 1">
+                <div class="game-info">
+                    <h3>Игра 1</h3>
+                    <p class="price">
+                        <span class="old-price">1500 ₽</span> 1200 ₽
+                    </p>
+                    <button class="add-to-cart">+</button>
                 </div>
-                <div class="add-to-cart" onclick="addToCart(1, event)"></div>
             </div>
-            <div class="game-card" onclick="openGamePage(2)">
-                <div class="game-image"></div>
-                <div class="game-title">Игра 2</div>
-                <div class="price">
-                    <span class="new-price">699₽</span>
-                    <span class="old-price">1299₽</span>
-                </div>
-                <div class="add-to-cart" onclick="addToCart(2, event)"></div>
-            </div>
-            <div class="game-card" onclick="openGamePage(3)">
-                <div class="game-image"></div>
-                <div class="game-title">Игра 3</div>
-                <div class="price">
-                    <span class="new-price">299₽</span>
-                    <span class="old-price">599₽</span>
-                </div>
-                <div class="add-to-cart" onclick="addToCart(3, event)"></div>
-            </div>
-            <!-- Добавьте больше карточек по необходимости -->
+            <!-- Повторить для других игр -->
         </div>
-    </div>
+    </section>
 
-    <div class="about">
+    <section id="about">
         <h2>О нас</h2>
-        <p>Мы - магазин видеоигр, предлагающий лучшие игры по выгодным ценам.</p>
-    </div>
+        <p>Мы продаем лучшие видеоигры для всех платформ!</p>
+    </section>
 
-    <footer class="footer">
-        <div class="user-profile"></div>
+    <footer>
+        <div class="user-profile">
+            <p>Профиль</p>
+        </div>
         <div class="cart">
-            <div class="cart-icon"></div>
-            <span class="cart-total" id="cartTotal">0₽</span>
+            <p>Корзина: 3000 ₽</p>
         </div>
     </footer>
+
+    <script src="script.js"></script>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Меню
+       // Открытие/закрытие меню
         function toggleMenu() {
-            const menu = document.getElementById('menu');
-            menu.classList.toggle('active');
+            const menu = document.getElementById('side-menu');
+            if (menu.style.right === '0px') {
+                menu.style.right = '-250px';
+            } else {
+                menu.style.right = '0';
+            }
         }
 
-        // Карусель
-        const carousel = document.getElementById('carousel');
-        const cards = carousel.querySelectorAll('.game-card');
-        let currentIndex = 0;
-
-        function updateCarousel() {
-            const cardWidth = 220; // Ширина карточки + margin
-            const offset = -currentIndex * cardWidth + (window.innerWidth / 2 - 125); // Центрирование
-            carousel.style.transform = `translateX(${offset}px)`;
-
-            cards.forEach((card, index) => {
-                card.classList.remove('center');
-                if (index === currentIndex) {
-                    card.classList.add('center');
-                }
-            });
-        }
-
-        // Автоматическая смена каждые 3 секунды
+        // Смена карточек в карусели
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.carousel-card');
         setInterval(() => {
-            currentIndex = (currentIndex + 1) % cards.length;
-            updateCarousel();
+            // Убираем старую большую карточку
+            cards[currentCard].style.transform = 'scale(0.8)';
+            currentCard = (currentCard + 1) % cards.length;
+            // Добавляем новую большую карточку
+            cards[currentCard].style.transform = 'scale(1)';
         }, 3000);
 
-        updateCarousel();
-
-        // Открытие страницы игры
-        function openGamePage(gameId) {
-            // Здесь можно использовать tg.openLink или навигацию внутри app
-            alert(`Открытие страницы игры ${gameId}`);
-            // Для реальной навигации используйте роутинг или tg.openLink
-        }
-
-        // Добавление в корзину
-        let cartItems = [];
-        let total = 0;
-
-        function addToCart(gameId, event) {
-            event.stopPropagation(); // Предотвращаем клик на карточку
-            // Пример: добавляем цену (в реальности получите из данных)
-            const prices = {1: 499, 2: 699, 3: 299};
-            total += prices[gameId];
-            cartItems.push(gameId);
-            document.getElementById('cartTotal').textContent = `${total}₽`;
-            tg.showPopup({message: 'Игра добавлена в корзину!'});
-        }
+        // Пример добавления товара в корзину
+        const addButtons = document.querySelectorAll('.add-to-cart');
+        addButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                alert('Игра добавлена в корзину!');
+            });
+        });
     </script>
 </body>
 </html>
