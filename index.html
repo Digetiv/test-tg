@@ -3,186 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магазин игр для Nintendo Switch</title>
+    <title>Магазин Видеоигр - Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Основные стили, соответствующие светлой теме Telegram */
         body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #ffffff; /* Светлый фон */
-            color: #000000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            background-color: #f0f0f0;
+            color: #333;
             overflow-x: hidden;
         }
 
-        /* Адаптивность для мобильных устройств */
-        .container {
-            width: 100%;
-            max-width: 375px; /* Стандартная ширина для мобильных Mini Apps */
-            padding: 16px;
-            box-sizing: border-box;
-        }
-
-        /* Верхний баннер */
-        .header-banner {
-            background-color: #f5f5f5; /* Нейтральный фон, можно заменить на тематический */
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        /* Секции топ продаж */
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            color: #000000;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .product-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 16px;
-            text-align: center;
-            cursor: pointer; /* Интерактивность */
-            transition: transform 0.2s;
-        }
-
-        .product-card:hover {
-            transform: scale(1.02);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 120px;
-            background-color: #e0e0e0; /* Плейсхолдер для изображения */
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .badge-container {
+        /* Header */
+        .header {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .badge {
-            background-color: #ff9500; /* Оранжевый акцент */
-            color: #ffffff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .product-price {
-            font-size: 14px;
-            color: #666666;
-        }
-
-        /* Специальная карточка с кнопкой + */
-        .product-card-special {
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 16px;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
         }
 
-        .add-button {
-            background-color: #ff9500; /* Оранжевый акцент */
-            color: #ffffff;
-            border: none;
+        .shop-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc; /* Плейсхолдер для иконки */
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            font-size: 20px;
+        }
+
+        .menu-button {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc; /* Плейсхолдер для кнопки меню */
+            border: none;
             cursor: pointer;
+        }
+
+        /* Menu */
+        .menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: rgba(255,255,255,0.8);
+            transition: right 0.3s ease;
+            padding: 20px;
+            box-shadow: -2px 0 4px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .menu.active {
+            right: 0;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu li {
+            margin: 10px 0;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Carousel */
+        .carousel-container {
+            margin-top: 60px; /* Под header */
+            overflow: hidden;
+            position: relative;
+            height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s;
         }
 
-        .add-button:hover {
-            background-color: #e08500;
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
         }
 
-        /* Соблюдение гайдлайнов Telegram Mini Apps: нет фиксированных позиций, фокус на скролле */
+        .game-card {
+            flex-shrink: 0;
+            width: 200px;
+            margin: 0 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.5s ease, width 0.5s ease;
+            position: relative;
+        }
+
+        .game-card.center {
+            transform: scale(1.2);
+            width: 250px;
+            z-index: 5;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 150px;
+            background-color: #ddd; /* Плейсхолдер для изображения */
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .game-title {
+            font-size: 18px;
+            margin: 10px 0 5px;
+        }
+
+        .price {
+            font-size: 16px;
+        }
+
+        .new-price {
+            color: red;
+            font-weight: bold;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: gray;
+            margin-left: 5px;
+        }
+
+        .add-to-cart {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #ccc; /* Плейсхолдер для иконки */
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* About Us */
+        .about {
+            padding: 20px;
+            background-color: #fff;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc; /* Плейсхолдер для профиля */
+            border-radius: 50%;
+        }
+
+        .cart {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #ccc; /* Плейсхолдер для корзины */
+            margin-right: 5px;
+        }
+
+        .cart-total {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Верхний баннер -->
-        <div class="header-banner">
-            <h1 class="header-title">Новые ограничения: как бороться с сетевой ошибкой на Nintendo Switch (2155-2000 и пр.).</h1>
-        </div>
+    <header class="header">
+        <div class="shop-icon"></div>
+        <button class="menu-button" onclick="toggleMenu()"></button>
+    </header>
 
-        <!-- Первая секция Топ продаж! -->
-        <h2 class="section-title">Топ продаж!</h2>
-        <div class="product-grid">
-            <!-- Карточка 1 -->
-            <div class="product-card">
-                <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
-                <h3 class="product-name">Nintendo Switch Online</h3>
-                <div class="badge-container">
-                    <span class="badge">ONLINE</span>
-                    <span class="badge">ONLINE</span>
-                </div>
-                <p class="product-price">8909/01 шт.</p>
-            </div>
+    <div class="menu" id="menu">
+        <ul>
+            <li><a href="#home">Главная</a></li>
+            <li><a href="#catalog">Каталог</a></li>
+            <li><a href="#contacts">Контакты</a></li>
+            <!-- Добавьте больше ссылок по необходимости -->
+        </ul>
+    </div>
 
-            <!-- Карточка 2 -->
-            <div class="product-card">
-                <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
-                <h3 class="product-name">Nintendo Switch Online</h3>
-                <div class="badge-container">
-                    <span class="badge">ONLINE</span>
-                    <span class="badge">ONLINE</span>
+    <div class="carousel-container">
+        <div class="carousel" id="carousel">
+            <!-- Пример карточек игр -->
+            <div class="game-card" onclick="openGamePage(1)">
+                <div class="game-image"></div>
+                <div class="game-title">Игра 1</div>
+                <div class="price">
+                    <span class="new-price">499₽</span>
+                    <span class="old-price">999₽</span>
                 </div>
-                <p class="product-price">8909/01 шт.</p>
+                <div class="add-to-cart" onclick="addToCart(1, event)"></div>
             </div>
-        </div>
-
-        <!-- Повторяющаяся секция Топ продаж! -->
-        <h2 class="section-title">Топ продаж!</h2>
-        <div class="product-grid">
-            <!-- Карточка 3 -->
-            <div class="product-card product-card-special">
-                <div>
-                    <div class="product-image"></div> <!-- Здесь можно добавить реальное изображение -->
-                    <h3 class="product-name">Koumajou Remilia: Scarlet Symphony</h3>
-                    <p class="product-price">1399 P</p>
+            <div class="game-card" onclick="openGamePage(2)">
+                <div class="game-image"></div>
+                <div class="game-title">Игра 2</div>
+                <div class="price">
+                    <span class="new-price">699₽</span>
+                    <span class="old-price">1299₽</span>
                 </div>
-                <button class="add-button">+</button>
+                <div class="add-to-cart" onclick="addToCart(2, event)"></div>
             </div>
+            <div class="game-card" onclick="openGamePage(3)">
+                <div class="game-image"></div>
+                <div class="game-title">Игра 3</div>
+                <div class="price">
+                    <span class="new-price">299₽</span>
+                    <span class="old-price">599₽</span>
+                </div>
+                <div class="add-to-cart" onclick="addToCart(3, event)"></div>
+            </div>
+            <!-- Добавьте больше карточек по необходимости -->
         </div>
     </div>
+
+    <div class="about">
+        <h2>О нас</h2>
+        <p>Мы - магазин видеоигр, предлагающий лучшие игры по выгодным ценам.</p>
+    </div>
+
+    <footer class="footer">
+        <div class="user-profile"></div>
+        <div class="cart">
+            <div class="cart-icon"></div>
+            <span class="cart-total" id="cartTotal">0₽</span>
+        </div>
+    </footer>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        // Меню
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        }
+
+        // Карусель
+        const carousel = document.getElementById('carousel');
+        const cards = carousel.querySelectorAll('.game-card');
+        let currentIndex = 0;
+
+        function updateCarousel() {
+            const cardWidth = 220; // Ширина карточки + margin
+            const offset = -currentIndex * cardWidth + (window.innerWidth / 2 - 125); // Центрирование
+            carousel.style.transform = `translateX(${offset}px)`;
+
+            cards.forEach((card, index) => {
+                card.classList.remove('center');
+                if (index === currentIndex) {
+                    card.classList.add('center');
+                }
+            });
+        }
+
+        // Автоматическая смена каждые 3 секунды
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % cards.length;
+            updateCarousel();
+        }, 3000);
+
+        updateCarousel();
+
+        // Открытие страницы игры
+        function openGamePage(gameId) {
+            // Здесь можно использовать tg.openLink или навигацию внутри app
+            alert(`Открытие страницы игры ${gameId}`);
+            // Для реальной навигации используйте роутинг или tg.openLink
+        }
+
+        // Добавление в корзину
+        let cartItems = [];
+        let total = 0;
+
+        function addToCart(gameId, event) {
+            event.stopPropagation(); // Предотвращаем клик на карточку
+            // Пример: добавляем цену (в реальности получите из данных)
+            const prices = {1: 499, 2: 699, 3: 299};
+            total += prices[gameId];
+            cartItems.push(gameId);
+            document.getElementById('cartTotal').textContent = `${total}₽`;
+            tg.showPopup({message: 'Игра добавлена в корзину!'});
+        }
+    </script>
 </body>
 </html>
